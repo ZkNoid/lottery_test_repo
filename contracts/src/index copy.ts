@@ -1,4 +1,3 @@
-import { Add } from './Add.js';
 import { Lottery } from './Lottery.js';
 import { Ticket } from './Ticket';
 import { DistibutionProgram, DistributionProofPublicInput } from './DistributionProof.js';
@@ -24,5 +23,3 @@ export {
   comisionTicket,
   O1js
 };
-
-export { Add };

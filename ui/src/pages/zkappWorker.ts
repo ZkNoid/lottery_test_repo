@@ -4,14 +4,16 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import type { Add } from '../../../contracts/src/Add';
-import { DistibutionProgram, Lottery } from 'l1-lottery-contracts';
+import type { Lottery } from '../../../contracts/src/Lottery';
+import { DistibutionProgram } from '../../../contracts/build/src/index';
+
 import { WebFileSystem, fetchCache } from '@/lib/cache';
 import { LOTTERY_CACHE } from '@/lib/contracts_cache';
 
 const state = {
-  Add: null as null | typeof Add,
-  zkapp: null as null | Add,
+  Lottery: null as null | typeof Lottery,
+  DistibutionProgram: null as null | typeof DistibutionProgram,
+  zkapp: null as null | Lottery,
   transaction: null as null | Transaction,
 };
 
@@ -26,14 +28,17 @@ const functions = {
     Mina.setActiveInstance(Network);
   },
   loadContract: async (args: {}) => {
-    const { Add } = await import('../../../contracts/build/src/Add.js');
-    state.Add = Add;
+    const { Lottery } = await import('../../../contracts/build/src/Lottery.js');
+    state.Lottery = Lottery;
+
+    const { DistributionProof } = await import('../../../contracts/build/src/DistributionProof.js');
+    state.DistibutionProgram = DistributionProof;
   },
   compileContract: async (args: {}) => {
     const lotteryCache = await fetchCache(LOTTERY_CACHE);
     console.log('[Worker] compiling distribution contracts');
 
-    await DistibutionProgram.compile({
+    await DistibutionProgram!.compile({
       cache: WebFileSystem(lotteryCache),
     });
     
@@ -41,7 +46,7 @@ const functions = {
 
     console.log('[Worker] compiling lottery contracts');
 
-    await Lottery.compile({
+    await state.Lottery!.compile({
       cache: WebFileSystem(lotteryCache),
     });
 
